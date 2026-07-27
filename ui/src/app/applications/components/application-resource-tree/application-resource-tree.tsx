@@ -9,7 +9,7 @@ import * as models from '../../../shared/models';
 import {isValidManagedByURL, MANAGED_BY_URL_INVALID_TEXT, MANAGED_BY_URL_INVALID_COLOR} from '../../../shared/utils';
 
 import {EmptyState} from '../../../shared/components';
-import {AppContext, Consumer} from '../../../shared/context';
+import {AppContext, AuthSettingsCtx, Consumer} from '../../../shared/context';
 import {ApplicationURLs} from '../application-urls';
 import {ResourceIcon} from '../resource-icon';
 import {ResourceLabel} from '../resource-label';
@@ -1001,6 +1001,8 @@ function findNetworkTargets(nodes: ResourceTreeNode[], networkingInfo: models.Re
     return result;
 }
 export const ApplicationResourceTree = (props: ApplicationResourceTreeProps) => {
+    const authSettings = React.useContext(AuthSettingsCtx);
+    const ownerReferencesInTree = authSettings?.ownerReferencesInTree === true;
     const graph = new dagre.graphlib.Graph<{[key: string]: any}>();
     graph.setGraph({nodesep: 25, rankdir: 'LR', marginy: 45, marginx: -100, ranksep: 80});
     graph.setDefaultEdgeLabel(() => ({}));
@@ -1274,7 +1276,13 @@ export const ApplicationResourceTree = (props: ApplicationResourceTreeProps) => 
         if (props.getNodeExpansion(appNode.uid)) {
             nodes.forEach(node => {
                 allChildNodes = [];
-                if ((node.parentRefs || []).length === 0 || managedKeys.has(nodeKey(node))) {
+                const parentRefs = node.parentRefs || [];
+                // When ownerReferencesInTree is enabled, a git-managed resource that has an
+                // ownerReference pointing to another node already in the tree is rendered as a
+                // child of that owner rather than at the Application root level.
+                const hasParentInTree =
+                    ownerReferencesInTree && parentRefs.length > 0 && parentRefs.some(parent => nodeByKey.has(treeNodeKey(parent)));
+                if (parentRefs.length === 0 || (managedKeys.has(nodeKey(node)) && !hasParentInTree)) {
                     roots.push(node);
                 } else {
                     if (orphanedKeys.has(nodeKey(node))) {

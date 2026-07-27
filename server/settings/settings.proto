@@ -48,6 +48,9 @@ message Settings {
     bool hydratorEnabled = 28;
     bool syncWithReplaceAllowed = 29;
     string uiLoginButtonText = 30;
+    // When true, git-managed resources that have ownerReferences pointing to another resource in
+    // the tree are displayed as children of that owner rather than at the Application root level.
+    bool ownerReferencesInTree = 31;
 }
 
 message GoogleAnalyticsConfig {

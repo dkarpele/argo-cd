@@ -2967,3 +2967,37 @@ func TestSettingsManager_GetWebhookRefreshJitter(t *testing.T) {
 		})
 	}
 }
+
+func TestOwnerReferencesInTree(t *testing.T) {
+	withSecretKey := func(secret *corev1.Secret) {
+		secret.Data["server.secretkey"] = []byte("test-secret-key")
+	}
+
+	t.Run("DefaultIsFalseWhenKeyAbsent", func(t *testing.T) {
+		_, settingsManager := fixtures(t.Context(), map[string]string{}, withSecretKey)
+		s, err := settingsManager.GetSettings()
+		require.NoError(t, err)
+		assert.False(t, s.OwnerReferencesInTree,
+			"OwnerReferencesInTree must default to false when key is absent from argocd-cm")
+	})
+
+	t.Run("FalseWhenExplicitlyDisabled", func(t *testing.T) {
+		_, settingsManager := fixtures(t.Context(), map[string]string{
+			"ui.ownerReferencesInTree": "false",
+		}, withSecretKey)
+		s, err := settingsManager.GetSettings()
+		require.NoError(t, err)
+		assert.False(t, s.OwnerReferencesInTree,
+			"OwnerReferencesInTree must be false when explicitly set to 'false' in argocd-cm")
+	})
+
+	t.Run("TrueWhenExplicitlyEnabled", func(t *testing.T) {
+		_, settingsManager := fixtures(t.Context(), map[string]string{
+			"ui.ownerReferencesInTree": "true",
+		}, withSecretKey)
+		s, err := settingsManager.GetSettings()
+		require.NoError(t, err)
+		assert.True(t, s.OwnerReferencesInTree,
+			"OwnerReferencesInTree must be true when set to 'true' in argocd-cm")
+	})
+}

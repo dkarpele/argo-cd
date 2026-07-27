@@ -634,6 +634,7 @@ export interface AuthSettings {
     impersonationEnabled: boolean;
     controllerNamespace: string;
     installationID: string;
+    ownerReferencesInTree: boolean;
 }
 
 export interface UserInfo {

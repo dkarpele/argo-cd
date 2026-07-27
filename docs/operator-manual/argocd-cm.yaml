@@ -376,6 +376,10 @@ data:
   # exec.enabled indicates whether the UI exec feature is enabled. It is disabled by default.
   exec.enabled: "false"
 
+  # ui.ownerReferencesInTree controls whether git-managed resources with ownerReferences are shown as
+  # children of their owner in the UI resource tree rather than at the Application root. Default: false.
+  ui.ownerReferencesInTree: "false"
+
   # exec.shells restricts which shells are allowed for `exec`, and in which order they are attempted
   exec.shells: "bash,sh,powershell,cmd"
 

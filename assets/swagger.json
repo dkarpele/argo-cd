@@ -5747,6 +5747,10 @@
         "oidcConfig": {
           "$ref": "#/definitions/clusterOIDCConfig"
         },
+        "ownerReferencesInTree": {
+          "description": "When true, git-managed resources that have ownerReferences pointing to another resource in\nthe tree are displayed as children of that owner rather than at the Application root level.",
+          "type": "boolean"
+        },
         "passwordPattern": {
           "type": "string"
         },

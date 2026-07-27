@@ -19,6 +19,20 @@ application.allowedNodeLabels: topology.kubernetes.io/zone,karpenter.sh/capacity
 Would result in:
 ![Node Labels in Pod View](../assets/application-pod-view-node-labels.png)
 
+## Owner References in Resource Tree
+
+By default, any resource with a Git manifest is placed at the **root level** of the Application resource tree, regardless of its Kubernetes `ownerReferences`.
+
+When `ui.ownerReferencesInTree` is enabled, a Git-managed resource whose `ownerReferences` point to another resource already present in the tree is rendered as a child of that owner instead of at the root:
+
+```yaml
+data:
+  ui.ownerReferencesInTree: "true"
+```
+
+> [!NOTE]
+> This is a UI display change only. It has no effect on sync, apply, or any GitOps operation.
+
 ## CLI Download Links
 
 The **Help** page (linked from the bottom of the sidebar) always shows a download button for the Linux CLI binary that is embedded in the Argo CD server, so users can fetch a working CLI without any configuration.
